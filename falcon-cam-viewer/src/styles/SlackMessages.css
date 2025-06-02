@@ -1,0 +1,99 @@
+.slack-messages {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000;
+  color: white;
+}
+
+.slack-header {
+  color: white;
+  text-align: center;
+  padding: 20px;
+  font-size: 2em;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.messages-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.message {
+  position: absolute;
+  animation: floatAcross 15s linear;
+  white-space: nowrap;
+  opacity: 0;
+}
+
+.message-content {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.message-text {
+  margin: 0;
+  font-size: 1.2em;
+  color: white;
+}
+
+.loading,
+.error-message,
+.no-messages {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  max-width: 80%;
+}
+
+.loading {
+  color: #4CAF50;
+  font-size: 1.2em;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 1.2em;
+}
+
+.error-message p {
+  margin: 10px 0;
+}
+
+.no-messages {
+  color: #9e9e9e;
+  font-size: 1.2em;
+}
+
+@keyframes floatAcross {
+  0% {
+    left: 100%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: -100%;
+    opacity: 0;
+  }
+}
+
+.message-0 { top: 20%; }
+.message-1 { top: 35%; }
+.message-2 { top: 50%; }
+.message-3 { top: 65%; }
+.message-4 { top: 80%; } 

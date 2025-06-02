@@ -1,0 +1,270 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+  background-color: #282c34;
+  color: white;
+  font-size: 16px; /* Base font size for mobile */
+}
+
+.invisible-click-area {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  z-index: 1000;
+  cursor: default;
+}
+
+.App-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  padding: 10px;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.App-header:hover {
+  opacity: 1;
+}
+
+.nav-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* Smaller gap for mobile */
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  padding: 0 10px;
+}
+
+.nav-option {
+  color: white;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  font-size: 0.9rem; /* Smaller font for mobile */
+}
+
+.nav-option:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-option.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+main {
+  padding-top: 60px;
+  position: relative;
+  height: 100vh;
+  background-color: #000;
+}
+
+/* Transition animations */
+.App main > div {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.firenation-credit {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.firenation-credit:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Add smooth page transitions */
+.App main {
+  min-height: 100vh;
+  transition: opacity 0.3s ease;
+}
+
+.App main > * {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+/* Base styles for mobile first approach */
+.App {
+  text-align: center;
+  min-height: 100vh;
+  background-color: #282c34;
+  color: white;
+  font-size: 16px; /* Base font size for mobile */
+}
+
+.nav-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* Smaller gap for mobile */
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  padding: 0 10px;
+}
+
+.nav-option {
+  font-size: 0.9rem; /* Smaller font for mobile */
+  padding: 6px 12px;
+}
+
+/* Tablet (portrait) */
+@media screen and (min-width: 768px) {
+  .App {
+    font-size: 18px;
+  }
+
+  .nav-options {
+    gap: 20px;
+  }
+
+  .nav-option {
+    font-size: 1rem;
+    padding: 8px 16px;
+  }
+
+  .firenation-credit {
+    font-size: 1rem;
+  }
+}
+
+/* Laptop/Desktop */
+@media screen and (min-width: 1024px) {
+  .App {
+    font-size: 20px;
+  }
+
+  .nav-options {
+    gap: 30px;
+  }
+
+  .nav-option {
+    font-size: 1.1rem;
+    padding: 10px 20px;
+  }
+}
+
+/* Large screens/TV */
+@media screen and (min-width: 1920px) {
+  .App {
+    font-size: 24px;
+  }
+
+  .nav-options {
+    gap: 40px;
+  }
+
+  .nav-option {
+    font-size: 1.2rem;
+    padding: 12px 24px;
+  }
+
+  .firenation-credit {
+    font-size: 1.2rem;
+    padding: 15px 30px;
+  }
+}
+
+/* Handle orientation changes */
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .App-header {
+    padding: 5px;
+  }
+
+  main {
+    padding-top: 50px;
+  }
+
+  .nav-option {
+    padding: 5px 10px;
+  }
+}
+
+/* Ensure content is accessible on very small screens */
+@media screen and (max-width: 320px) {
+  .nav-options {
+    gap: 5px;
+  }
+
+  .nav-option {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+
+  .firenation-credit {
+    font-size: 0.8rem;
+    padding: 8px 16px;
+  }
+}
+
+.app-footer {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 2rem;
+  color: #fff;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.footer-section h3 {
+  color: #64ffda;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.footer-section p {
+  color: #94a1b2;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+} 
