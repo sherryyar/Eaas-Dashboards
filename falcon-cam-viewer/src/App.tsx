@@ -4,6 +4,9 @@ import StreamViewer from './components/StreamViewer';
 import OpsGenieDashboard from './components/OpsGenieDashboard';
 import Home from './components/Home';
 import NavigationButton from './components/NavigationButton';
+import LocationBot from './components/LocationBot';
+import EAASMusicBot from './components/EAASMusicBot';
+import EAASGallery from './components/EAASGallery';
 import './App.css';
 
 function App() {
@@ -15,6 +18,9 @@ function App() {
           <Route path="/falcon-cam" element={<StreamViewer />} />
           <Route path="/stream" element={<StreamViewer autoTransition={false} />} />
           <Route path="/opsgenie" element={<OpsGenieDashboard />} />
+          <Route path="/location-bot" element={<LocationBot />} />
+          <Route path="/music-bot" element={<EAASMusicBot />} />
+          <Route path="/gallery" element={<EAASGallery />} />
         </Routes>
       </main>
       <NavigationButton />

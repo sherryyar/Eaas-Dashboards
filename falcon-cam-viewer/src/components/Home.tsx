@@ -22,6 +22,27 @@ const Home: React.FC = () => {
       path: '/opsgenie',
       gradient: 'linear-gradient(135deg, #FF6B6B 0%, #FF2D55 100%)',
       icon: '📊'
+    },
+    {
+      id: 'location-bot',
+      title: 'Location Bot',
+      path: '/location-bot',
+      gradient: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)',
+      icon: '📍'
+    },
+    {
+      id: 'music-bot',
+      title: 'EAAS Music',
+      path: '/music-bot',
+      gradient: 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)',
+      icon: '🎵'
+    },
+    {
+      id: 'gallery',
+      title: 'EAAS Gallery',
+      path: '/gallery',
+      gradient: 'linear-gradient(135deg, #9C27B0 0%, #673AB7 100%)',
+      icon: '🖼️'
     }
   ];
 

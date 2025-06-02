@@ -11,7 +11,10 @@ const NavigationButton: React.FC = () => {
   const routes = [
     { path: '/', label: 'Home', icon: '🏠', description: 'Welcome to EAAS TV' },
     { path: '/stream', label: 'Stream', icon: '🎥', description: 'Live Camera Streams' },
-    { path: '/opsgenie', label: 'OpsGenie', icon: '📊', description: 'On-Call Dashboard' }
+    { path: '/opsgenie', label: 'OpsGenie', icon: '📊', description: 'On-Call Dashboard' },
+    { path: '/location-bot', label: 'Location Bot', icon: '📍', description: 'Team Location Tracker' },
+    { path: '/music-bot', label: 'EAAS Music', icon: '🎵', description: 'Team Music Player' },
+    { path: '/gallery', label: 'EAAS Gallery', icon: '🖼️', description: 'EAAS Team Gallery' }
   ];
 
   const currentIndex = routes.findIndex(route => route.path === location.pathname);
