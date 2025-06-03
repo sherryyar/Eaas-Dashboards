@@ -3,62 +3,127 @@ const cors = require('cors');
 const { WebClient } = require('@slack/web-api');
 const axios = require('axios');
 const dotenv = require('dotenv');
+const helmet = require('helmet');
+const compression = require('compression');
+const winston = require('winston');
 
 // Load environment variables
 dotenv.config();
 
+// Configure logger
+const logger = winston.createLogger({
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
+    })
+  ]
+});
+
 const app = express();
 const port = process.env.PORT || 3001;
+
+// Security middleware
+app.use(helmet());
+app.use(compression());
 
 // Initialize Slack client with bot token
 const client = new WebClient(process.env.SLACK_BOT_TOKEN);
 
-// Enable CORS
+// Enable CORS with specific origin
+const allowedOrigins = process.env.NODE_ENV === 'production' 
+  ? ['https://eaas-react-frontend.azurewebsites.net'] 
+  : ['http://localhost:3000'];
+
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
-// Helper function to get username
+// Rate limiting middleware
+const rateLimit = require('express-rate-limit');
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
+// Error handling middleware
+const errorHandler = (err, req, res, next) => {
+  logger.error('Error:', err);
+  res.status(err.status || 500).json({
+    error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : err.message
+  });
+};
+
+// Helper function to get username with caching
+const userCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 async function getUsername(userId) {
+  const cached = userCache.get(userId);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.username;
+  }
+
   try {
     const result = await client.users.info({ user: userId });
-    return result.user.real_name;
+    const username = result.user.real_name;
+    userCache.set(userId, { username, timestamp: Date.now() });
+    return username;
   } catch (error) {
-    console.error(`Error fetching user info for ${userId}:`, error);
+    logger.error(`Error fetching user info for ${userId}:`, error);
     return `Unknown User (${userId})`;
   }
 }
 
-// Location tracking endpoint
-app.get('/api/location-tracking', async (req, res) => {
+// Location tracking endpoint with caching
+const locationCache = new Map();
+const LOCATION_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+app.get('/api/location-tracking', async (req, res, next) => {
   try {
-    console.log('Fetching location data...');
+    const cached = locationCache.get('location');
+    if (cached && Date.now() - cached.timestamp < LOCATION_CACHE_TTL) {
+      return res.json(cached.data);
+    }
+
+    logger.info('Fetching location data...');
     const conversationId = process.env.SLACK_CHANNEL_ID;
     
-    // Fetch messages
     const result = await client.conversations.history({
       channel: conversationId,
       inclusive: true,
       limit: 100
     });
 
-    // Find the workflow message
     const workflowMessage = result.messages.find(msg => 
       msg.text && msg.text.includes('Hi Fantastic Humans')
     );
 
     if (!workflowMessage) {
-      console.log('No check-in message found');
+      logger.info('No check-in message found');
       return res.json({
         error: 'No check-in message found',
         timestamp: new Date().toISOString()
       });
     }
 
-    console.log('Found check-in message, getting reactions...');
+    logger.info('Found check-in message, getting reactions...');
 
-    // Get reactions
     const reactionsResult = await client.reactions.get({
       channel: conversationId,
       timestamp: workflowMessage.ts
@@ -73,7 +138,7 @@ app.get('/api/location-tracking', async (req, res) => {
     };
 
     if (reactionsResult.message && reactionsResult.message.reactions) {
-      for (const reaction of reactionsResult.message.reactions) {
+      await Promise.all(reactionsResult.message.reactions.map(async (reaction) => {
         const usernames = await Promise.all(
           reaction.users.map(userId => getUsername(userId))
         );
@@ -89,25 +154,32 @@ app.get('/api/location-tracking', async (req, res) => {
         }
 
         locationData.totalResponses += usernames.length;
-      }
+      }));
     }
 
-    console.log('Location data fetched successfully:', locationData);
+    locationCache.set('location', { data: locationData, timestamp: Date.now() });
+    logger.info('Location data fetched successfully');
     res.json(locationData);
   } catch (error) {
-    console.error('Error fetching location data:', error);
-    res.status(500).json({ 
-      error: 'Failed to fetch location data',
-      message: error.message
-    });
+    next(error);
   }
 });
 
-// OpsGenie endpoint for on-call schedules
-app.get('/api/opsgenie/schedules/:scheduleId/on-calls', async (req, res) => {
+// OpsGenie endpoint with caching
+const opsgenieCache = new Map();
+const OPSGENIE_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+app.get('/api/opsgenie/schedules/:scheduleId/on-calls', async (req, res, next) => {
   try {
-    console.log('Fetching OpsGenie on-call data...');
     const { scheduleId } = req.params;
+    const cacheKey = `opsgenie-${scheduleId}`;
+    
+    const cached = opsgenieCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < OPSGENIE_CACHE_TTL) {
+      return res.json(cached.data);
+    }
+
+    logger.info('Fetching OpsGenie on-call data...');
     
     const response = await axios.get(`https://api.opsgenie.com/v2/schedules/${scheduleId}/on-calls`, {
       headers: {
@@ -116,38 +188,37 @@ app.get('/api/opsgenie/schedules/:scheduleId/on-calls', async (req, res) => {
       }
     });
 
-    // Transform the data to match the frontend's expected format
     const transformedData = {
       data: {
         _parent: {
           id: response.data.data._parent.id,
           name: response.data.data._parent.name,
           enabled: response.data.data._parent.enabled,
-          timezone: 'UTC', // Default timezone if not provided
-          rotations: [] // Empty array if not provided
+          timezone: 'UTC',
+          rotations: []
         },
         onCallParticipants: response.data.data.onCallParticipants.map(participant => ({
           name: participant.name,
           type: participant.type,
-          fullName: participant.name.split('@')[0], // Extract name from email
-          timeZone: 'UTC' // Default timezone if not provided
+          fullName: participant.name.split('@')[0],
+          timeZone: 'UTC'
         }))
       }
     };
 
-    console.log('OpsGenie data fetched and transformed successfully');
+    opsgenieCache.set(cacheKey, { data: transformedData, timestamp: Date.now() });
+    logger.info('OpsGenie data fetched and transformed successfully');
     res.json(transformedData);
   } catch (error) {
-    console.error('Error fetching OpsGenie data:', error);
-    res.status(500).json({
-      error: 'Failed to fetch OpsGenie data',
-      message: error.message
-    });
+    next(error);
   }
 });
 
+// Apply error handling middleware
+app.use(errorHandler);
+
 // Start server
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-  console.log('Slack Channel ID:', process.env.SLACK_CHANNEL_ID);
+  logger.info(`Server running on port ${port}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
 }); 

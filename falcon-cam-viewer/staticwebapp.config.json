@@ -10,9 +10,16 @@
     "rewrite": "/index.html",
     "exclude": ["/images/*", "/css/*", "/js/*", "/api/*", "/*.{png,jpg,gif,svg,css,js}"]
   },
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/index.html",
+      "statusCode": 200
+    }
+  },
   "globalHeaders": {
-    "Content-Security-Policy": "default-src 'self' https://api.opsgenie.com https://slack.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.opsgenie.com https://slack.com",
+    "Content-Security-Policy": "default-src 'self' https://eaas-react-frontend.azurewebsites.net; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';",
     "X-Frame-Options": "DENY",
-    "X-Content-Type-Options": "nosniff"
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin"
   }
 } 
