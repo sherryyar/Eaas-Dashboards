@@ -131,7 +131,6 @@
   border: 2px solid transparent;
   border-top-color: #2196F3;
   border-bottom-color: #00BCD4;
-  animation: orbitSpin 8s linear infinite;
 }
 
 .main-title::before {
@@ -139,7 +138,6 @@
   left: -30px;
   right: -30px;
   bottom: -30px;
-  animation-direction: normal;
 }
 
 .main-title::after {
@@ -147,8 +145,6 @@
   left: -50px;
   right: -50px;
   bottom: -50px;
-  animation-direction: reverse;
-  animation-duration: 12s;
 }
 
 /* Add corner accents */
@@ -167,7 +163,6 @@
   background-repeat: no-repeat;
   filter: blur(2px);
   opacity: 0.5;
-  animation: cornerPulse 3s ease-in-out infinite;
   z-index: -1;
 }
 
@@ -184,7 +179,6 @@
     radial-gradient(circle at 70% 80%, #00BCD4 0%, transparent 2%) 0 0/33.33% 33.33%,
     radial-gradient(circle at 50% 50%, #4CAF50 0%, transparent 2%) 0 0/33.33% 33.33%;
   filter: blur(1px);
-  animation: particleFloat 10s linear infinite;
   z-index: -2;
 }
 
@@ -267,10 +261,7 @@
     transparent 100%
   );
   transform: translateX(-50%);
-  animation: 
-    lineFloat 3s ease-in-out infinite,
-    lineGlow 2s ease-in-out infinite,
-    lineWidth 4s ease-in-out infinite;
+  animation: lineFadeMove 4s ease-in-out infinite;
 }
 
 .main-title::before {
@@ -281,96 +272,39 @@
 .main-title::after {
   bottom: -20px;
   transform-origin: right center;
-  animation-delay: 1s;
+  animation-delay: 2s;
 }
 
 /* Add pseudo-elements for additional effects */
-.main-title::before::after,
-.main-title::after::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: inherit;
-  filter: blur(4px);
-  animation: lineBlur 2.5s ease-in-out infinite;
-}
+/* .main-title::before::after, */
+/* .main-title::after::after { */
+/*   content: ''; */
+/*   position: absolute; */
+/*   top: 0; */
+/*   left: 0; */
+/*   width: 100%; */
+/*   height: 100%; */
+/*   background: inherit; */
+/*   filter: blur(4px); */
+/*   animation: lineBlur 2.5s ease-in-out infinite; */
+/* } */
 
-@keyframes lineFloat {
-  0%, 100% {
+@keyframes lineFadeMove {
+  0% {
+    opacity: 0;
     transform: translateX(-50%) translateY(0);
   }
-  50% {
-    transform: translateX(-50%) translateY(-2px);
-  }
-}
-
-@keyframes lineGlow {
-  0%, 100% {
-    box-shadow: 
-      0 0 10px rgba(33, 150, 243, 0.3),
-      0 0 20px rgba(33, 150, 243, 0.2),
-      0 0 30px rgba(33, 150, 243, 0.1);
-    opacity: 0.8;
-  }
-  50% {
-    box-shadow: 
-      0 0 15px rgba(33, 150, 243, 0.5),
-      0 0 30px rgba(33, 150, 243, 0.3),
-      0 0 45px rgba(33, 150, 243, 0.2);
+  25% {
     opacity: 1;
+    transform: translateX(-50%) translateY(-1px);
   }
-}
-
-@keyframes lineWidth {
-  0%, 100% {
-    width: 100px;
-  }
-  50% {
-    width: 140px;
-  }
-}
-
-@keyframes lineBlur {
-  0%, 100% {
-    filter: blur(4px);
-    opacity: 0.3;
-  }
-  50% {
-    filter: blur(2px);
-    opacity: 0.5;
-  }
-}
-
-/* Add a glowing dot that moves along the lines */
-.main-title::before::before,
-.main-title::after::before {
-  content: '';
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: #2196F3;
-  border-radius: 50%;
-  filter: blur(2px);
-  animation: dotMove 3s linear infinite;
-}
-
-@keyframes dotMove {
-  0% {
-    left: 0;
-    opacity: 0;
-  }
-  20% {
+  75% {
     opacity: 1;
-  }
-  80% {
-    opacity: 1;
+    transform: translateX(-50%) translateY(1px);
   }
   100% {
-    left: 100%;
     opacity: 0;
+    transform: translateX(-50%) translateY(0);
   }
 }
 

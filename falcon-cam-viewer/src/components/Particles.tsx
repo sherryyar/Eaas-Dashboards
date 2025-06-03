@@ -28,7 +28,7 @@ const Particles: React.FC = () => {
 
     const createParticles = () => {
       particles.current = [];
-      const numParticles = Math.floor((window.innerWidth * window.innerHeight) / 10000);
+      const numParticles = Math.floor((window.innerWidth * window.innerHeight) / 15000);
       
       for (let i = 0; i < numParticles; i++) {
         particles.current.push({
@@ -67,7 +67,7 @@ const Particles: React.FC = () => {
           const dy = particle.y - otherParticle.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 100) {
+          if (distance < 80) {
             ctx.beginPath();
             ctx.strokeStyle = `rgba(100, 255, 218, ${0.2 * (1 - distance / 100)})`;
             ctx.lineWidth = 0.5;
