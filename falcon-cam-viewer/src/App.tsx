@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import StreamViewer from './components/StreamViewer';
 import OpsGenieDashboard from './components/OpsGenieDashboard';
 import Home from './components/Home';
-import NavigationButton from './components/NavigationButton';
 import LocationBot from './components/LocationBot';
 import EAASMusicBot from './components/EAASMusicBot';
 import EAASGallery from './components/EAASGallery';
@@ -23,7 +22,6 @@ function App() {
           <Route path="/gallery" element={<EAASGallery />} />
         </Routes>
       </main>
-      <NavigationButton />
       <footer className="app-footer">
         <div className="footer-content">
           <div className="footer-section">
