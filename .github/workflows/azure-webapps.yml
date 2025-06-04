@@ -1,0 +1,42 @@
+name: Deploy Fullstack App to Azure
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Build React frontend
+        run: |
+          cd falcon-cam-viewer
+          npm install
+          npm run build
+
+      - name: Install backend dependencies
+        run: |
+          cd falcon-cam-viewer/server
+          npm install
+
+      - name: Copy React build to backend
+        run: |
+          cp -r falcon-cam-viewer/build falcon-cam-viewer/server/
+
+      - name: Deploy backend to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'eaas-react-frontend'
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          package: falcon-cam-viewer/server 
