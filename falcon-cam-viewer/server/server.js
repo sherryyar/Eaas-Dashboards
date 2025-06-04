@@ -1,12 +1,12 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
+const compression = require('compression');
 const { WebClient } = require('@slack/web-api');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const helmet = require('helmet');
-const compression = require('compression');
 const winston = require('winston');
-const path = require('path');
 
 // Load environment variables
 dotenv.config();
@@ -29,7 +29,7 @@ const logger = winston.createLogger({
 });
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 10000;
 
 // Security middleware
 app.use(helmet());
