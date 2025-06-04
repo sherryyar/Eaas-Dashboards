@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import StreamViewer from './components/StreamViewer';
 import OpsGenieDashboard from './components/OpsGenieDashboard';
 import Home from './components/Home';
+import NavigationButton from './components/NavigationButton';
 import LocationBot from './components/LocationBot';
 import EAASMusicBot from './components/EAASMusicBot';
 import EAASGallery from './components/EAASGallery';
@@ -11,6 +12,14 @@ import './App.css';
 function App() {
   return (
     <div className="App">
+      <nav className="app-navigation">
+        <NavigationButton to="/">Home</NavigationButton>
+        <NavigationButton to="/stream">Live Streams</NavigationButton>
+        <NavigationButton to="/opsgenie">OpsGenie</NavigationButton>
+        <NavigationButton to="/location-bot">Location Bot</NavigationButton>
+        <NavigationButton to="/music-bot">EAAS Music</NavigationButton>
+        <NavigationButton to="/gallery">EAAS Gallery</NavigationButton>
+      </nav>
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
