@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 const helmet = require('helmet');
 const compression = require('compression');
 const winston = require('winston');
+const path = require('path');
 
 // Load environment variables
 dotenv.config();
@@ -212,6 +213,14 @@ app.get('/api/opsgenie/schedules/:scheduleId/on-calls', async (req, res, next) =
   } catch (error) {
     next(error);
   }
+});
+
+// Serve static files from the React build directory
+app.use(express.static(path.join(__dirname, '../build')));
+
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
 // Apply error handling middleware
