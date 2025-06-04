@@ -38,10 +38,6 @@ const EAASMusicBot: React.FC = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setVolume(Number(event.target.value));
-  };
-
   const toggleMute = () => {
     setIsMuted(!isMuted);
   };

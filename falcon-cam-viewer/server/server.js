@@ -40,7 +40,7 @@ const client = new WebClient(process.env.SLACK_BOT_TOKEN);
 
 // Enable CORS with specific origin
 const allowedOrigins = process.env.NODE_ENV === 'production' 
-  ? ['https://eaas-backend.onrender.com'] 
+  ? ['https://eaas-frontend.onrender.com', 'https://eaas-backend.onrender.com'] 
   : ['http://localhost:3000'];
 
 app.use(cors({
@@ -51,7 +51,9 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Rate limiting middleware
@@ -177,11 +179,17 @@ app.get('/api/opsgenie/schedules/:scheduleId/on-calls', async (req, res, next) =
     
     const cached = opsgenieCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < OPSGENIE_CACHE_TTL) {
+      logger.info('Returning cached OpsGenie data');
       return res.json(cached.data);
     }
 
-    logger.info('Fetching OpsGenie on-call data...');
+    logger.info(`Fetching OpsGenie on-call data for schedule ${scheduleId}...`);
     
+    if (!process.env.OPSGENIE_API_KEY) {
+      logger.error('OPSGENIE_API_KEY is not set');
+      return res.status(500).json({ error: 'OpsGenie API key is not configured' });
+    }
+
     const response = await axios.get(`https://api.opsgenie.com/v2/schedules/${scheduleId}/on-calls`, {
       headers: {
         'Authorization': `GenieKey ${process.env.OPSGENIE_API_KEY}`,
@@ -189,6 +197,8 @@ app.get('/api/opsgenie/schedules/:scheduleId/on-calls', async (req, res, next) =
       }
     });
 
+    logger.info('Successfully fetched OpsGenie data');
+    
     const transformedData = {
       data: {
         _parent: {
@@ -198,19 +208,21 @@ app.get('/api/opsgenie/schedules/:scheduleId/on-calls', async (req, res, next) =
           timezone: 'UTC',
           rotations: []
         },
-        onCallParticipants: response.data.data.onCallParticipants.map(participant => ({
-          name: participant.name,
-          type: participant.type,
-          fullName: participant.name.split('@')[0],
-          timeZone: 'UTC'
-        }))
+        onCallParticipants: response.data.data.onCallParticipants || []
       }
     };
 
     opsgenieCache.set(cacheKey, { data: transformedData, timestamp: Date.now() });
-    logger.info('OpsGenie data fetched and transformed successfully');
     res.json(transformedData);
   } catch (error) {
+    logger.error('Error fetching OpsGenie data:', error.message);
+    if (error.response) {
+      logger.error('OpsGenie API response:', error.response.data);
+      return res.status(error.response.status).json({
+        error: 'Error fetching OpsGenie data',
+        details: error.response.data
+      });
+    }
     next(error);
   }
 });

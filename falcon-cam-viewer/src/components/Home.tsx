@@ -2,31 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 
-interface WeatherData {
-  temperature: number;
-  condition: string;
-  location: string;
-}
-
-interface LocationData {
-  latitude: number;
-  longitude: number;
-  address: string;
-}
-
-interface OpsGenieData {
-  onCall: string[];
-  schedule: string;
-}
-
 const Home: React.FC = () => {
   const gridRef = useRef<HTMLDivElement>(null);
   const [activeScreen, setActiveScreen] = useState(0);
   const navigate = useNavigate();
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [locationData, setLocationData] = useState<LocationData | null>(null);
-  const [opsgenieData, setOpsgenieData] = useState<OpsGenieData | null>(null);
 
   const screens = [
     {
@@ -78,13 +57,8 @@ const Home: React.FC = () => {
       setActiveScreen((prev) => (prev + 1) % screens.length);
     }, 3000);
 
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
     return () => {
       clearInterval(interval);
-      clearInterval(timer);
     };
   }, [screens.length]);
 
