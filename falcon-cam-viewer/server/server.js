@@ -40,7 +40,7 @@ const client = new WebClient(process.env.SLACK_BOT_TOKEN);
 
 // Enable CORS with specific origin
 const allowedOrigins = process.env.NODE_ENV === 'production' 
-  ? ['https://eaas-react-frontend.azurewebsites.net'] 
+  ? ['https://eaas-backend.onrender.com'] 
   : ['http://localhost:3000'];
 
 app.use(cors({
@@ -217,6 +217,11 @@ app.get('/api/opsgenie/schedules/:scheduleId/on-calls', async (req, res, next) =
 
 // Serve static files from the React build directory
 app.use(express.static(path.join(__dirname, '../build')));
+
+// API routes
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
 // Handle React routing, return all requests to React app
 app.get('*', (req, res) => {
