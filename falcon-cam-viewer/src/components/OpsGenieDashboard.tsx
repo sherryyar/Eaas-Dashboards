@@ -143,10 +143,9 @@ const OpsGenieDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchAllSchedules();
-    // Update every 5 hours instead of 5 minutes
-    const interval = setInterval(fetchAllSchedules, 5 * 60 * 60 * 1000);
+    const interval = setInterval(fetchAllSchedules, 300000); // 5 minutes
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchAllSchedules]);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', {
